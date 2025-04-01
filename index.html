@@ -34,6 +34,19 @@
         document.addEventListener("keydown", handleKeyPress);
         canvas.addEventListener("click", applyGlue);
 
+        // Load images
+        const hunterImage = new Image();
+        hunterImage.src = 'nativehunter.png';  // Make sure this is correct path for hunter image
+
+        const deerImage = new Image();
+        deerImage.src = 'deer.png';  // Correct path for deer image
+
+        const spearHeadImage = new Image();
+        spearHeadImage.src = 'images/spearhead.png'; // For spearhead image
+
+        const spearShaftImage = new Image();
+        spearShaftImage.src = 'images/spearshaft.png';  // For spear shaft image
+
         function handleKeyPress(event) {
             if (gameOver) return;
 
@@ -83,10 +96,10 @@
 
             // Draw hunter (without spear), deer, spear shaft, and spear head
             drawHunter();
-            drawElement(deer, "Deer");
+            drawDeer();
 
-            if (!spearShaft.pickedUp) drawElement(spearShaft, "Spear Shaft");
-            if (!spearHead.pickedUp) drawElement(spearHead, "Spear Head");
+            if (!spearShaft.pickedUp) drawElement(spearShaft, spearShaftImage, "Spear Shaft");
+            if (!spearHead.pickedUp) drawElement(spearHead, spearHeadImage, "Spear Head");
 
             // Handle thrown spear with glue applied
             if (spear.thrown) {
@@ -119,14 +132,19 @@
         }
 
         function drawHunter() {
-            ctx.fillStyle = "brown";
-            ctx.fillRect(hunter.x, hunter.y, hunter.width, hunter.height);
+            ctx.drawImage(hunterImage, hunter.x, hunter.y, hunter.width, hunter.height);
             labelElement(hunter, "Hunter");
         }
 
-        function drawElement(obj, label) {
-            ctx.fillStyle = obj.pickedUp ? "gray" : "brown";
-            ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
+        function drawDeer() {
+            ctx.drawImage(deerImage, deer.x, deer.y, deer.width, deer.height);
+            labelElement(deer, "Deer");
+        }
+
+        function drawElement(obj, image, label) {
+            if (!obj.pickedUp) {
+                ctx.drawImage(image, obj.x, obj.y, obj.width, obj.height);
+            }
             labelElement(obj, label);
         }
 
@@ -153,4 +171,3 @@
     </script>
 </body>
 </html>
-
