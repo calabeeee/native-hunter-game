@@ -13,9 +13,7 @@
 </head>
 <body>
     <h1>Native Hunter Game</h1>
-    <p id="instructions">
-        Instructions: Move the hunter with the left and right arrow keys. Walk over the shaft and spearhead to pick them up. Click to glue the spearhead to the shaft. Press spacebar to throw the spear at the deer.
-    </p>
+    <p id="instructions">Instructions: Use the arrow keys to move the hunter. Walk over the shaft and spearhead to pick them up. Click to glue them together. Press spacebar to throw the spear at the deer.</p>
     <canvas id="gameCanvas" width="600" height="400"></canvas>
     <button onclick="restartGame()">Restart</button>
     
@@ -25,172 +23,118 @@
 
         // Load images
         const hunterImage = new Image();
-        hunterImage.src = 'nativehunter.png';  // Update the path if needed
+        hunterImage.src = 'nativehunter.png';  // Update with your image path
 
         const deerImage = new Image();
-        deerImage.src = 'deer.png';  // Update the path if needed
+        deerImage.src = 'deer.png';  // Update with your image path
 
-        // Define game objects
+        // Game state
         let hunter = { x: 50, y: 300, width: 40, height: 60, hasShaft: false, hasSpearhead: false };
         let deer = { x: 500, y: 280, width: 50, height: 50, direction: 1 };
-
-        let shaft = { x: 100, y: 280, width: 10, height: 60 }; // Position of shaft
-        let spearhead = { x: 200, y: 240, width: 20, height: 20 }; // Position of spearhead
-
+        let shaft = { x: 100, y: 280, width: 10, height: 60 };
+        let spearhead = { x: 200, y: 240, width: 20, height: 20 };
         let spear = { x: hunter.x + 20, y: hunter.y + 10, width: 30, height: 5, thrown: false, glued: false };
-        
-        let glueApplied = false;
-        let step = 1;  // For step-by-step instructions
 
         // Handle key events
         document.addEventListener("keydown", moveHunter);
         document.addEventListener("keydown", throwSpear);
         canvas.addEventListener("click", applyGlue);
 
-        // Move the hunter left or right
         function moveHunter(event) {
             if (event.key === "ArrowLeft" && hunter.x > 0) hunter.x -= 20;
             if (event.key === "ArrowRight" && hunter.x < canvas.width - hunter.width) hunter.x += 20;
 
-            // Check if hunter picks up the shaft or spearhead
+            // Pick up the shaft and spearhead when the hunter walks over them
             if (!hunter.hasShaft && hunter.x + hunter.width > shaft.x && hunter.x < shaft.x + shaft.width) {
                 hunter.hasShaft = true;
-                shaft.x = -100;  // Move shaft off-screen once picked up
-                updateInstructions(2);  // Update step to show next instruction
+                shaft.x = -100;  // Move the shaft off-screen after picking up
             }
             if (!hunter.hasSpearhead && hunter.x + hunter.width > spearhead.x && hunter.x < spearhead.x + spearhead.width) {
                 hunter.hasSpearhead = true;
-                spearhead.x = -100;  // Move spearhead off-screen once picked up
-                updateInstructions(3);  // Update step to show next instruction
-            }
-
-            // Move spear with the hunter if it's glued
-            if (spear.glued) {
-                spear.x = hunter.x + 20;  // Spear follows the hunter's position
-                spear.y = hunter.y + 10;
+                spearhead.x = -100;  // Move the spearhead off-screen after picking up
             }
         }
 
-        // Apply glue by clicking on the canvas
         function applyGlue(event) {
-            if (hunter.hasShaft && hunter.hasSpearhead && !glueApplied && !spear.glued) {
-                glueApplied = true;
-                spear.glued = true;  // Spear is now glued
-                spear.x = hunter.x + 20;  // Position spear next to hunter
-                spear.y = hunter.y + 10;
-                updateInstructions(4);  // Update step to show next instruction
+            if (hunter.hasShaft && hunter.hasSpearhead && !spear.glued) {
+                spear.glued = true;
+                updateInstructions("Step 4: Press spacebar to throw the spear at the deer.");
             }
         }
 
-        // Throw the spear when Spacebar is pressed
         function throwSpear(event) {
-            if (event.key === " " && glueApplied && spear.glued && !spear.thrown) {
-                spear.thrown = true;  // Spear is now thrown
-                glueApplied = false;  // Reset glue state after throwing
-                updateInstructions(5);  // Update step to show next instruction
+            if (event.key === " " && spear.glued && !spear.thrown) {
+                spear.thrown = true;
+                updateInstructions("Step 5: You threw the spear! Wait for the result.");
             }
         }
 
-        // Update game state
+        function updateInstructions(text) {
+            document.getElementById("instructions").innerText = text;
+        }
+
         function update() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             // Draw the hunter
             ctx.drawImage(hunterImage, hunter.x, hunter.y, hunter.width, hunter.height);
-            ctx.fillText("Hunter", hunter.x + 10, hunter.y + 10);
 
             // Draw the deer (moving up and down)
             ctx.drawImage(deerImage, deer.x, deer.y, deer.width, deer.height);
             deer.y += deer.direction;
             if (deer.y > canvas.height - deer.height || deer.y < 0) {
-                deer.direction *= -1;  // Bounce the deer up and down
+                deer.direction *= -1;  // Deer bounces up and down
             }
-            ctx.fillText("Deer", deer.x + 10, deer.y + 10);
 
-            // Draw the shaft and spearhead if not picked up yet
+            // Draw shaft and spearhead
             if (!hunter.hasShaft) {
                 ctx.fillStyle = "brown";
                 ctx.fillRect(shaft.x, shaft.y, shaft.width, shaft.height);
-                ctx.fillText("Shaft", shaft.x + 10, shaft.y + 10);
             }
             if (!hunter.hasSpearhead) {
                 ctx.fillStyle = "gray";
                 ctx.fillRect(spearhead.x, spearhead.y, spearhead.width, spearhead.height);
-                ctx.fillText("Spearhead", spearhead.x + 10, spearhead.y + 10);
             }
 
-            // Draw thrown spear
+            // Draw the spear
             if (spear.thrown) {
-                spear.x += 10;  // Spear moves right
+                spear.x += 10;  // Move spear right
+            }
+            if (spear.x > deer.x && spear.x < deer.x + deer.width && spear.y > deer.y && spear.y < deer.y + deer.height) {
+                alert("You hit the deer!");
+                spear.thrown = false;
+                spear.x = hunter.x + 20;
+                spear.y = hunter.y + 10;
+                spear.glued = false;
+                hunter.hasShaft = false;
+                hunter.hasSpearhead = false;
+                shaft.x = 100;  // Reset shaft position
+                spearhead.x = 200;  // Reset spearhead position
+                updateInstructions("You hit the deer! Restart the game to try again.");
             }
 
             ctx.fillStyle = "gray";
             ctx.fillRect(spear.x, spear.y, spear.width, spear.height);
 
-            // Collision with the deer
-            if (spear.x > deer.x && spear.x < deer.x + deer.width && spear.y > deer.y && spear.y < deer.y + deer.height) {
-                alert("You caught the deer!");
-                spear.thrown = false;
-                spear.x = hunter.x + 20;
-                spear.y = hunter.y + 10;
-                spear.glued = false;  // Reset spear state
-                glueApplied = false;  // Reset glue state
-                hunter.hasShaft = false;  // Reset item pickup states
-                hunter.hasSpearhead = false;
-                shaft.x = 100;  // Reset shaft position
-                spearhead.x = 200;  // Reset spearhead position
-            }
-
-            requestAnimationFrame(update);  // Keep updating the game
+            requestAnimationFrame(update);
         }
 
-        // Restart game
         function restartGame() {
             hunter.x = 50;
             hunter.y = 300;
-            glueApplied = false;
             spear.thrown = false;
             spear.x = hunter.x + 20;
             spear.y = hunter.y + 10;
-            deer.y = 280;  // Reset deer position
             spear.glued = false;
             hunter.hasShaft = false;
             hunter.hasSpearhead = false;
             shaft.x = 100;
             spearhead.x = 200;
-            step = 1; // Reset instructions step
-            updateInstructions(1);
+            deer.y = 280;
+            updateInstructions("Use arrow keys to move the hunter.");
         }
 
-        // Update the instructions as player progresses
-        function updateInstructions(newStep) {
-            step = newStep;
-            let instructions = "";
-            switch (step) {
-                case 1:
-                    instructions = "Step 1: Use the arrow keys to move the hunter.";
-                    break;
-                case 2:
-                    instructions = "Step 2: Walk over the shaft to pick it up.";
-                    break;
-                case 3:
-                    instructions = "Step 3: Walk over the spearhead to pick it up.";
-                    break;
-                case 4:
-                    instructions = "Step 4: Click to glue the spearhead to the shaft.";
-                    break;
-                case 5:
-                    instructions = "Step 5: Press spacebar to throw the spear at the deer.";
-                    break;
-                case 6:
-                    instructions = "Game Over! You caught the deer!";
-                    break;
-            }
-            document.getElementById("instructions").innerText = instructions;
-        }
-
-        // Start game loop
-        update();  
+        update();  // Start the game loop
     </script>
 </body>
 </html>
