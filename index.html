@@ -56,16 +56,13 @@
             if (!hunter.hasShaft && hunter.x + hunter.width > shaft.x && hunter.x < shaft.x + shaft.width) {
                 hunter.hasShaft = true;
                 shaft.x = -100;  // Move shaft off-screen once picked up
-                step = 2; // Update step to show next instruction
+                updateInstructions(2);  // Update step to show next instruction
             }
             if (!hunter.hasSpearhead && hunter.x + hunter.width > spearhead.x && hunter.x < spearhead.x + spearhead.width) {
                 hunter.hasSpearhead = true;
                 spearhead.x = -100;  // Move spearhead off-screen once picked up
-                step = 3; // Update step to show next instruction
+                updateInstructions(3);  // Update step to show next instruction
             }
-
-            // Update instructions based on progress
-            updateInstructions();
 
             // Move spear with the hunter if it's glued
             if (spear.glued) {
@@ -81,8 +78,7 @@
                 spear.glued = true;  // Spear is now glued
                 spear.x = hunter.x + 20;  // Position spear next to hunter
                 spear.y = hunter.y + 10;
-                step = 4; // Update step to show next instruction
-                updateInstructions(); // Update instructions
+                updateInstructions(4);  // Update step to show next instruction
             }
         }
 
@@ -91,8 +87,7 @@
             if (event.key === " " && glueApplied && spear.glued && !spear.thrown) {
                 spear.thrown = true;  // Spear is now thrown
                 glueApplied = false;  // Reset glue state after throwing
-                step = 5; // Update step to show next instruction
-                updateInstructions(); // Update instructions
+                updateInstructions(5);  // Update step to show next instruction
             }
         }
 
@@ -164,11 +159,12 @@
             shaft.x = 100;
             spearhead.x = 200;
             step = 1; // Reset instructions step
-            updateInstructions();
+            updateInstructions(1);
         }
 
         // Update the instructions as player progresses
-        function updateInstructions() {
+        function updateInstructions(newStep) {
+            step = newStep;
             let instructions = "";
             switch (step) {
                 case 1:
