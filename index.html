@@ -35,7 +35,7 @@
         let hunter = { x: 50, y: 300, width: 40, height: 60, hasShaft: false, hasSpearhead: false, hasGlue: false, spear: { x: -100, y: -100 } };
         let deer = { x: 500, y: 280, width: 50, height: 50, direction: 1 };
         let shaft = { x: 100, y: 280, width: 10, height: 60 };
-        let spearhead = { x: 200, y: 240, width: 20, height: 20 };
+        let spearhead = { x: 200, y: 280, width: 20, height: 20 };  // Adjusted position
         let tree = { x: 350, y: 250, width: 40, height: 80 };
         let spear = { x: -100, y: -100, width: 30, height: 5, thrown: false, glued: false };
 
@@ -84,10 +84,6 @@
             if (event.key === " " && spear.glued && !spear.thrown) {
                 spear.thrown = true;
                 updateInstructions("Step 6: You threw the spear! Wait to see if it hits the deer.");
-            }
-            // If spear has been thrown, move it
-            if (spear.thrown) {
-                spear.x += 10;  // Move spear right when thrown
             }
         }
 
