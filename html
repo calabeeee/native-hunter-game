@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Native Hunter Game</title>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; }
+        canvas { background: lightgreen; display: block; margin: auto; }
+        button { margin-top: 10px; padding: 10px; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <h1>Native Hunter Game</h1>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+    <button onclick="restartGame()">Restart</button>
+    
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        
+        let hunter = { x: 50, y: 300, width: 40, height: 60 };
+        let deer = { x: 500, y: 280, width: 50, height: 50 };
+        let spear = { x: hunter.x + 20, y: hunter.y + 10, width: 30, height: 5, thrown: false };
+        let glueApplied = false;
+
+        document.addEventListener("keydown", moveHunter);
+        canvas.addEventListener("click", applyGlue);
+
+        function moveHunter(event) {
+            if (event.key === "ArrowLeft" && hunter.x > 0) hunter.x -= 20;
+            if (event.key === "ArrowRight" && hunter.x < canvas.width - hunter.width) hunter.x += 20;
+        }
+
+        function applyGlue() {
+            glueApplied = true;
+            setTimeout(() => {
+                spear.thrown = true;
+            }, 1000); // Simulates glue drying before throwing
+        }
+
+        function update() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = "brown";
+            ctx.fillRect(hunter.x, hunter.y, hunter.width, hunter.height);
+            
+            ctx.fillStyle = "red";
+            ctx.fillRect(deer.x, deer.y, deer.width, deer.height);
+            
+            if (spear.thrown) {
+                spear.x += 10;
+            } else {
+                spear.x = hunter.x + 20;
+            }
+
+            ctx.fillStyle = "gray";
+            ctx.fillRect(spear.x, spear.y, spear.width, spear.height);
+
+            if (spear.x > deer.x && spear.x < deer.x + deer.width && spear.y > deer.y && spear.y < deer.y + deer.height) {
+                alert("You caught the deer!");
+                spear.thrown = false;
+                spear.x = hunter.x + 20;
+            }
+
+            requestAnimationFrame(update);
+        }
+        
+        function restartGame() {
+            hunter.x = 50;
+            spear.thrown = false;
+            spear.x = hunter.x + 20;
+        }
+
+        update();
+    </script>
+</body>
+</html>
