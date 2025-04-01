@@ -8,10 +8,14 @@
         body { text-align: center; font-family: Arial, sans-serif; }
         canvas { background: lightgreen; display: block; margin: auto; }
         button { margin-top: 10px; padding: 10px; font-size: 16px; }
+        #instructions { font-size: 18px; margin-top: 20px; }
     </style>
 </head>
 <body>
     <h1>Native Hunter Game</h1>
+    <p id="instructions">
+        Instructions: Move the hunter with the left and right arrow keys. Click to glue the spearhead to the shaft. Press spacebar to throw the spear at the deer.
+    </p>
     <canvas id="gameCanvas" width="600" height="400"></canvas>
     <button onclick="restartGame()">Restart</button>
     
@@ -39,7 +43,8 @@
 
         // Handle key events
         document.addEventListener("keydown", moveHunter);
-        document.addEventListener("keydown", applyGlue);
+        document.addEventListener("keydown", throwSpear);
+        canvas.addEventListener("click", applyGlue);
 
         // Move the hunter left or right
         function moveHunter(event) {
@@ -47,12 +52,19 @@
             if (event.key === "ArrowRight" && hunter.x < canvas.width - hunter.width) hunter.x += 20;
         }
 
-        // Apply glue (Spacebar key)
+        // Apply glue by clicking on the canvas
         function applyGlue(event) {
-            if (event.key === " " && !glueApplied) {  // Spacebar
+            if (!glueApplied) {
                 glueApplied = true;
                 spear.x = hunter.x + 20;  // Position spear next to hunter
                 spear.y = hunter.y + 10;
+            }
+        }
+
+        // Throw the spear when Spacebar is pressed
+        function throwSpear(event) {
+            if (event.key === " " && glueApplied && !spear.thrown) {
+                spear.thrown = true;  // Spear is now thrown
             }
         }
 
@@ -83,11 +95,6 @@
             }
 
             // Draw thrown spear
-            if (glueApplied && !spear.thrown) {
-                spear.x = hunter.x + 20;
-                spear.y = hunter.y + 10;
-            }
-
             if (spear.thrown) {
                 spear.x += 10;  // Spear moves right
             }
