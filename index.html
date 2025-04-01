@@ -75,7 +75,7 @@
         function throwSpear(event) {
             if (event.key === " " && spear.glued && !spear.thrown) {
                 spear.thrown = true;
-                updateInstructions("Step 5: You threw the spear! Keep throwing it until it hits the deer.");
+                updateInstructions("Step 5: You threw the spear! Wait to see if it hits the deer.");
             }
             // If spear has been thrown, move it
             if (spear.thrown) {
@@ -129,15 +129,10 @@
                 // Check if spear hits the deer
                 if (spear.x > deer.x && spear.x < deer.x + deer.width && spear.y > deer.y && spear.y < deer.y + deer.height) {
                     alert("You hit the deer!");
-                    spear.thrown = false;
-                    spear.x = hunter.x + 20;
-                    spear.y = hunter.y + 10;
-                    spear.glued = false;
-                    hunter.hasShaft = false;
-                    hunter.hasSpearhead = false;
-                    shaft.x = 100;  // Reset shaft position
-                    spearhead.x = 200;  // Reset spearhead position
-                    updateInstructions("You hit the deer! Restart the game to try again.");
+                    restartGame();  // Restart the game after hit
+                } else if (spear.x > canvas.width) {
+                    alert("You missed the deer!");
+                    restartGame();  // Restart the game after miss
                 }
             }
 
