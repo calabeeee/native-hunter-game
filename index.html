@@ -55,6 +55,12 @@
                 spearhead.x = -100;  // Move the spearhead off-screen after picking up
                 updateInstructions("Step 3: Click to glue the spearhead to the shaft.");
             }
+
+            // If spear is glued, make it follow the hunter
+            if (spear.glued && !spear.thrown) {
+                spear.x = hunter.x + 20; // Position spear in front of hunter
+                spear.y = hunter.y + 10; // Position spear just below the hunter's hand
+            }
         }
 
         function applyGlue(event) {
@@ -70,6 +76,10 @@
             if (event.key === " " && spear.glued && !spear.thrown) {
                 spear.thrown = true;
                 updateInstructions("Step 5: You threw the spear! Keep throwing it until it hits the deer.");
+            }
+            // If spear has been thrown, move it
+            if (spear.thrown) {
+                spear.x += 10;  // Move spear right when thrown
             }
         }
 
@@ -111,7 +121,6 @@
 
             // Draw the thrown spear
             if (spear.thrown) {
-                spear.x += 10;  // Move spear right when thrown
                 ctx.fillStyle = "gray";
                 ctx.fillRect(spear.x, spear.y, spear.width, spear.height);
                 ctx.fillStyle = "black";
