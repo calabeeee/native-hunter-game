@@ -137,6 +137,9 @@
                 ctx.fillStyle = "black";
                 ctx.fillText("Spear", spear.x + 5, spear.y - 10);
 
+                // Move spear forward after throwing
+                spear.x += 5;
+
                 // Check if spear hits the deer
                 if (spear.x > deer.x && spear.x < deer.x + deer.width && spear.y > deer.y && spear.y < deer.y + deer.height) {
                     alert("You hit the deer!");
