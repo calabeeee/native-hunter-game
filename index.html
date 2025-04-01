@@ -48,13 +48,13 @@
         const backgroundImage = new Image();
         backgroundImage.src = 'background.png';  // Replace with your actual image path
 
-        // Game state with original positions, but sprites scaled by 3x
-        let hunter = { x: 50, y: 300, width: 120, height: 180, hasShaft: false, hasSpearhead: false, hasGlue: false, spear: { x: -100, y: -100 } };
-        let deer = { x: 500, y: 280, width: 150, height: 150, direction: 1 };
-        let shaft = { x: 100, y: 280, width: 30, height: 180 };
-        let spearhead = { x: 200, y: 280, width: 60, height: 60 };
-        let tree = { x: 350, y: 250, width: 120, height: 240 };
-        let spear = { x: -100, y: -100, width: 90, height: 15, thrown: false, glued: false };
+        // Game state with original positions
+        let hunter = { x: 50, y: 300, width: 40, height: 60, hasShaft: false, hasSpearhead: false, hasGlue: false, spear: { x: -100, y: -100 } };
+        let deer = { x: 500, y: 280, width: 50, height: 50, direction: 1 };
+        let shaft = { x: 100, y: 280, width: 10, height: 60 };
+        let spearhead = { x: 200, y: 280, width: 20, height: 20 };
+        let tree = { x: 350, y: 250, width: 40, height: 80 };
+        let spear = { x: -100, y: -100, width: 30, height: 5, thrown: false, glued: false };
 
         // Movement step (same as original size, no scaling on movement)
         const moveStep = 20;
