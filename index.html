@@ -6,13 +6,13 @@
     <title>Native Hunter Game</title>
     <style>
         body { text-align: center; font-family: Arial, sans-serif; }
-        canvas { display: block; margin: auto; }
+        canvas { background: lightgreen; display: block; margin: auto; }
         button { margin-top: 10px; padding: 10px; font-size: 16px; }
-        h1 { color: white; }  
+        h1 { color: white; }  /* Changed header color to white */
         #instructions { 
             font-size: 18px; 
             margin-top: 20px; 
-            color: white; 
+            color: white; /* Changed instructions color to white */
         }
     </style>
 </head>
@@ -27,51 +27,59 @@
         const ctx = canvas.getContext("2d");
 
         // Load images
-        const backgroundImage = new Image();
-        backgroundImage.src = 'background.png'; // Load background
-
         const hunterImage = new Image();
-        hunterImage.src = 'nativehunter.png';  
+        hunterImage.src = 'nativehunter.png'; // Replace with your actual image path
 
         const deerImage = new Image();
-        deerImage.src = 'deer.png';  
+        deerImage.src = 'deer.png'; // Replace with your actual image path
 
         const treeImage = new Image();
-        treeImage.src = 'tree.png';  
+        treeImage.src = 'tree.png'; // Replace with your actual image path
 
         const shaftImage = new Image();
-        shaftImage.src = 'shaft.png';
+        shaftImage.src = 'shaft.png'; // Replace with your actual image path
 
         const spearheadImage = new Image();
-        spearheadImage.src = 'spearhead.png';
+        spearheadImage.src = 'spearhead.png'; // Replace with your actual image path
 
         const spearImage = new Image();
-        spearImage.src = 'spear.png';
+        spearImage.src = 'spear.png'; // Replace with your actual image path
 
-        // Game state
-        let hunter = { x: 50, y: 300, width: 40, height: 60, hasShaft: false, hasSpearhead: false, hasGlue: false };
-        let deer = { x: 500, y: 280, width: 50, height: 50, direction: 1 };
-        let shaft = { x: 100, y: 280, width: 30, height: 60 };
-        let spearhead = { x: 200, y: 280, width: 30, height: 30 };
-        let tree = { x: 350, y: 250, width: 40, height: 80 };
-        let spear = { x: -100, y: -100, width: 50, height: 10, thrown: false, glued: false };
+        const backgroundImage = new Image();
+        backgroundImage.src = 'background.png'; // Replace with your actual image path
 
+        // Scale factor
+        const scale = 3;
+
+        // Game state (scaled by 3x)
+        let hunter = { x: 50, y: 300, width: 40 * scale, height: 60 * scale, hasShaft: false, hasSpearhead: false, hasGlue: false, spear: { x: -100, y: -100 } };
+        let deer = { x: 500, y: 280, width: 50 * scale, height: 50 * scale, direction: 1 };
+        let shaft = { x: 100, y: 280, width: 10 * scale, height: 60 * scale };
+        let spearhead = { x: 200, y: 280, width: 20 * scale, height: 20 * scale };
+        let tree = { x: 350, y: 250, width: 40 * scale, height: 80 * scale };
+        let spear = { x: -100, y: -100, width: 30 * scale, height: 5 * scale, thrown: false, glued: false };
+
+        // Movement step (scaled)
+        const moveStep = 20 * scale;
+
+        // Handle key events
         document.addEventListener("keydown", moveHunter);
         document.addEventListener("keydown", throwSpear);
         canvas.addEventListener("click", applyGlue);
 
         function moveHunter(event) {
-            if (event.key === "ArrowLeft" && hunter.x > 0) hunter.x -= 20;
-            if (event.key === "ArrowRight" && hunter.x < canvas.width - hunter.width) hunter.x += 20;
+            if (event.key === "ArrowLeft" && hunter.x > 0) hunter.x -= moveStep;
+            if (event.key === "ArrowRight" && hunter.x < canvas.width - hunter.width) hunter.x += moveStep;
 
+            // Pick up the shaft and spearhead when the hunter walks over them
             if (!hunter.hasShaft && hunter.x + hunter.width > shaft.x && hunter.x < shaft.x + shaft.width) {
                 hunter.hasShaft = true;
-                shaft.x = -100;  
+                shaft.x = -100;  // Move the shaft off-screen after picking up
                 updateInstructions("Step 2: Now pick up the spearhead.");
             }
             if (!hunter.hasSpearhead && hunter.x + hunter.width > spearhead.x && hunter.x < spearhead.x + spearhead.width) {
                 hunter.hasSpearhead = true;
-                spearhead.x = -100;  
+                spearhead.x = -100;  // Move the spearhead off-screen after picking up
                 updateInstructions("Step 3: Now walk past the tree to harvest the glue.");
             }
             if (!hunter.hasGlue && hunter.x + hunter.width > tree.x && hunter.x < tree.x + tree.width) {
@@ -79,14 +87,17 @@
                 updateInstructions("Step 4: Click to glue the spearhead to the shaft.");
             }
 
+            // If spear is glued, make it follow the hunter
             if (spear.glued && !spear.thrown) {
-                spear.x = hunter.x + 20; 
-                spear.y = hunter.y + 10; 
+                spear.x = hunter.x + 20 * scale; // Position spear in front of hunter
+                spear.y = hunter.y + 10 * scale; // Position spear just below the hunter's hand
             }
         }
 
         function applyGlue(event) {
             if (hunter.hasShaft && hunter.hasSpearhead && hunter.hasGlue && !spear.glued) {
+                spear.x = hunter.x + 20 * scale; // Position spear in front of hunter
+                spear.y = hunter.y + 10 * scale; // Position spear just below the hunter's hand
                 spear.glued = true;
                 updateInstructions("Step 5: Press spacebar to throw the spear at the deer.");
             }
@@ -101,50 +112,34 @@
 
         function update() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // Draw background
 
-            // Draw background first
-            ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-
+            // Draw the hunter
             ctx.drawImage(hunterImage, hunter.x, hunter.y, hunter.width, hunter.height);
+
+            // Draw the deer (moving up and down)
             ctx.drawImage(deerImage, deer.x, deer.y, deer.width, deer.height);
             deer.y += deer.direction;
             if (deer.y > canvas.height - deer.height || deer.y < 0) {
-                deer.direction *= -1;
+                deer.direction *= -1;  // Deer bounces up and down
             }
 
+            // Draw the tree with glue
             if (!hunter.hasGlue) {
                 ctx.drawImage(treeImage, tree.x, tree.y, tree.width, tree.height);
-                ctx.fillStyle = "black";
-                ctx.fillText("Tree (Glue)", tree.x - 10, tree.y - 10);
             }
 
+            // Draw shaft and spearhead with labels
             if (!hunter.hasShaft) {
                 ctx.drawImage(shaftImage, shaft.x, shaft.y, shaft.width, shaft.height);
-                ctx.fillStyle = "black";
-                ctx.fillText("Shaft", shaft.x + 10, shaft.y - 10);
             }
             if (!hunter.hasSpearhead) {
                 ctx.drawImage(spearheadImage, spearhead.x, spearhead.y, spearhead.width, spearhead.height);
-                ctx.fillStyle = "black";
-                ctx.fillText("Spearhead", spearhead.x + 5, spearhead.y - 10);
             }
 
-            if (spear.glued && !spear.thrown) {
+            // Draw the spear (if glued and thrown)
+            if (spear.glued || spear.thrown) {
                 ctx.drawImage(spearImage, spear.x, spear.y, spear.width, spear.height);
-            }
-
-            if (spear.thrown) {
-                ctx.drawImage(spearImage, spear.x, spear.y, spear.width, spear.height);
-
-                spear.x += 5;
-
-                if (spear.x > deer.x && spear.x < deer.x + deer.width && spear.y > deer.y && spear.y < deer.y + deer.height) {
-                    alert("You hit the deer!");
-                    restartGame();
-                } else if (spear.x > canvas.width) {
-                    alert("You missed the deer!");
-                    restartGame();
-                }
             }
 
             requestAnimationFrame(update);
@@ -171,7 +166,7 @@
             document.getElementById("instructions").innerText = text;
         }
 
-        update();  
+        update();  // Start the game loop
     </script>
 </body>
 </html>
