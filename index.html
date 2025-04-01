@@ -28,35 +28,35 @@
 
         // Load images
         const hunterImage = new Image();
-        hunterImage.src = 'nativehunter.png'; // Replace with your actual image path
+        hunterImage.src = 'nativehunter.png';  // Replace with your actual image path
 
         const deerImage = new Image();
-        deerImage.src = 'deer.png'; // Replace with your actual image path
+        deerImage.src = 'deer.png';  // Replace with your actual image path
 
         const treeImage = new Image();
-        treeImage.src = 'tree.png'; // Replace with your actual image path
+        treeImage.src = 'tree.png';  // Replace with your actual image path
 
         const shaftImage = new Image();
-        shaftImage.src = 'shaft.png'; // Replace with your actual image path
+        shaftImage.src = 'shaft.png';  // Replace with your actual image path
 
         const spearheadImage = new Image();
-        spearheadImage.src = 'spearhead.png'; // Replace with your actual image path
+        spearheadImage.src = 'spearhead.png';  // Replace with your actual image path
 
         const spearImage = new Image();
-        spearImage.src = 'spear.png'; // Replace with your actual image path
+        spearImage.src = 'spear.png';  // Replace with your actual image path
 
         const backgroundImage = new Image();
-        backgroundImage.src = 'background.png'; // Replace with your actual image path
+        backgroundImage.src = 'background.png';  // Replace with your actual image path
 
-        // Game state with original positions but scaled size (3x)
-        let hunter = { x: 50, y: 300, width: 40 * 3, height: 60 * 3, hasShaft: false, hasSpearhead: false, hasGlue: false, spear: { x: -100, y: -100 } };
-        let deer = { x: 500, y: 280, width: 50 * 3, height: 50 * 3, direction: 1 };
-        let shaft = { x: 100, y: 280, width: 10 * 3, height: 60 * 3 };
-        let spearhead = { x: 200, y: 280, width: 20 * 3, height: 20 * 3 };
-        let tree = { x: 350, y: 250, width: 40 * 3, height: 80 * 3 };
-        let spear = { x: -100, y: -100, width: 30 * 3, height: 5 * 3, thrown: false, glued: false };
+        // Game state with original positions, but sprites scaled by 3x
+        let hunter = { x: 50, y: 300, width: 120, height: 180, hasShaft: false, hasSpearhead: false, hasGlue: false, spear: { x: -100, y: -100 } };
+        let deer = { x: 500, y: 280, width: 150, height: 150, direction: 1 };
+        let shaft = { x: 100, y: 280, width: 30, height: 180 };
+        let spearhead = { x: 200, y: 280, width: 60, height: 60 };
+        let tree = { x: 350, y: 250, width: 120, height: 240 };
+        let spear = { x: -100, y: -100, width: 90, height: 15, thrown: false, glued: false };
 
-        // Movement step (scale is applied in size, so no need to scale move step)
+        // Movement step (same as original size, no scaling on movement)
         const moveStep = 20;
 
         // Handle key events
