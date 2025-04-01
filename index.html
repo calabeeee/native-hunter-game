@@ -18,36 +18,36 @@
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
-        
+
         // Load images
         const hunterImage = new Image();
         hunterImage.src = 'nativehunter.png';  // Update the path if needed
 
         const deerImage = new Image();
         deerImage.src = 'deer.png';  // Update the path if needed
-        
+
         // Define game objects
         let hunter = { x: 50, y: 300, width: 40, height: 60 };
         let deer = { x: 500, y: 280, width: 50, height: 50, direction: 1 };
-        
+
         let shaft = { x: 100, y: 280, width: 10, height: 60 };
         let spearhead = { x: 100, y: 240, width: 20, height: 20 };
-        
+
         let spear = { x: hunter.x + 20, y: hunter.y + 10, width: 30, height: 5, thrown: false };
         
         let glueApplied = false;
-        
-        // Handle key and mouse events
+
+        // Handle key events
         document.addEventListener("keydown", moveHunter);
         document.addEventListener("keydown", applyGlue);
 
-        // Moving the hunter left and right
+        // Move the hunter left or right
         function moveHunter(event) {
             if (event.key === "ArrowLeft" && hunter.x > 0) hunter.x -= 20;
             if (event.key === "ArrowRight" && hunter.x < canvas.width - hunter.width) hunter.x += 20;
         }
 
-        // Applying glue to attach the spearhead to the shaft (Spacebar)
+        // Apply glue (Spacebar key)
         function applyGlue(event) {
             if (event.key === " " && !glueApplied) {  // Spacebar
                 glueApplied = true;
@@ -56,29 +56,33 @@
             }
         }
 
-        // Update game state (draw everything)
+        // Update game state
         function update() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw Hunter
+            // Draw the hunter
             ctx.drawImage(hunterImage, hunter.x, hunter.y, hunter.width, hunter.height);
+            ctx.fillText("Hunter", hunter.x + 10, hunter.y + 10);
 
-            // Draw Deer (moving up and down)
+            // Draw the deer (moving up and down)
             ctx.drawImage(deerImage, deer.x, deer.y, deer.width, deer.height);
             deer.y += deer.direction;
             if (deer.y > canvas.height - deer.height || deer.y < 0) {
                 deer.direction *= -1;  // Bounce the deer up and down
             }
+            ctx.fillText("Deer", deer.x + 10, deer.y + 10);
 
-            // Draw shaft and spearhead if not glued yet
+            // Draw the shaft and spearhead if not glued yet
             if (!glueApplied) {
                 ctx.fillStyle = "brown";
                 ctx.fillRect(shaft.x, shaft.y, shaft.width, shaft.height);
                 ctx.fillStyle = "gray";
                 ctx.fillRect(spearhead.x, spearhead.y, spearhead.width, spearhead.height);
+                ctx.fillText("Shaft", shaft.x + 10, shaft.y + 10);
+                ctx.fillText("Spearhead", spearhead.x + 10, spearhead.y + 10);
             }
 
-            // Draw thrown spear if glue applied
+            // Draw thrown spear
             if (glueApplied && !spear.thrown) {
                 spear.x = hunter.x + 20;
                 spear.y = hunter.y + 10;
@@ -91,7 +95,7 @@
             ctx.fillStyle = "gray";
             ctx.fillRect(spear.x, spear.y, spear.width, spear.height);
 
-            // Detect collision with deer
+            // Collision with the deer
             if (spear.x > deer.x && spear.x < deer.x + deer.width && spear.y > deer.y && spear.y < deer.y + deer.height) {
                 alert("You caught the deer!");
                 spear.thrown = false;
@@ -100,10 +104,10 @@
                 glueApplied = false;  // Reset the glue state
             }
 
-            requestAnimationFrame(update);  // Continuously update the game
+            requestAnimationFrame(update);  // Keep updating the game
         }
 
-        // Restart game function
+        // Restart game
         function restartGame() {
             hunter.x = 50;
             hunter.y = 300;
@@ -114,7 +118,8 @@
             deer.y = 280;  // Reset deer position
         }
 
-        update();  // Start the game loop
+        // Start game loop
+        update();  
     </script>
 </body>
 </html>
