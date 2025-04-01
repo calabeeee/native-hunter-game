@@ -16,13 +16,13 @@
     <p id="instructions">Step 1: Move to pick up the shaft and spearhead. Step 2: Click to glue them together. Step 3: Press Spacebar to throw!</p>
     <canvas id="gameCanvas" width="600" height="400"></canvas>
     <button onclick="restartGame()">Restart</button>
-    
+
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
-        
+
         let phase = "pickup"; // 'pickup', 'building', 'hunting'
-        
+
         let hunter = { x: 50, y: 300, width: 40, height: 60, hasShaft: false, hasHead: false };
         let deer = { x: 500, y: 280, width: 50, height: 50, direction: 1 };
         let spearShaft = { x: 150, y: 350, width: 60, height: 5, pickedUp: false };
@@ -36,14 +36,14 @@
 
         function handleKeyPress(event) {
             if (gameOver) return;
-            
+
             if (event.key === "ArrowLeft" && hunter.x > 0) hunter.x -= 20;
             if (event.key === "ArrowRight" && hunter.x < canvas.width - hunter.width) hunter.x += 20;
-            
+
             if (phase === "pickup") {
                 checkPickup();
             }
-            
+
             if (phase === "hunting" && event.key === " " && glueApplied && !spear.thrown) {
                 throwSpear();
             }
@@ -80,29 +80,33 @@
 
         function update() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            drawElement(hunter, "brown", "Hunter");
-            drawElement(deer, "red", "Deer");
-            
-            if (!spearShaft.pickedUp) drawElement(spearShaft, "gray", "Spear Shaft");
-            if (!spearHead.pickedUp) drawElement(spearHead, "black", "Spear Head");
-            
+
+            // Draw hunter (without spear), deer, spear shaft, and spear head
+            drawHunter();
+            drawElement(deer, "Deer");
+
+            if (!spearShaft.pickedUp) drawElement(spearShaft, "Spear Shaft");
+            if (!spearHead.pickedUp) drawElement(spearHead, "Spear Head");
+
+            // Handle thrown spear with glue applied
             if (spear.thrown) {
                 spear.x += spear.speed;
             } else if (glueApplied) {
                 spear.x = hunter.x + 20;
             }
-            
+
             ctx.fillStyle = glueApplied ? "blue" : "gray";
             ctx.fillRect(spear.x, spear.y, spear.width, spear.height);
             labelElement(spear, "Spear");
-            
+
+            // Deer movement logic
             deer.y += deer.direction * 2;
             if (deer.y < 250 || deer.y > 320) deer.direction *= -1;
-            
+
+            // Check for spear hitting the deer
             if (
-                spear.x + spear.width >= deer.x && 
-                spear.y >= deer.y && 
+                spear.x + spear.width >= deer.x &&
+                spear.y >= deer.y &&
                 spear.y <= deer.y + deer.height &&
                 spear.thrown
             ) {
@@ -110,22 +114,28 @@
                 gameOver = true;
                 spear.speed = 0;
             }
-            
+
             if (!gameOver) requestAnimationFrame(update);
         }
-        
-        function drawElement(obj, color, label) {
-            ctx.fillStyle = color;
+
+        function drawHunter() {
+            ctx.fillStyle = "brown";
+            ctx.fillRect(hunter.x, hunter.y, hunter.width, hunter.height);
+            labelElement(hunter, "Hunter");
+        }
+
+        function drawElement(obj, label) {
+            ctx.fillStyle = obj.pickedUp ? "gray" : "brown";
             ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
             labelElement(obj, label);
         }
-        
+
         function labelElement(obj, text) {
             ctx.fillStyle = "black";
             ctx.font = "12px Arial";
             ctx.fillText(text, obj.x, obj.y - 5);
         }
-        
+
         function restartGame() {
             phase = "pickup";
             hunter = { x: 50, y: 300, width: 40, height: 60, hasShaft: false, hasHead: false };
@@ -138,8 +148,9 @@
             document.getElementById("instructions").innerText = "Step 1: Move to pick up the shaft and spearhead. Step 2: Click to glue them together. Step 3: Press Spacebar to throw!";
             update();
         }
-        
+
         update();
     </script>
 </body>
 </html>
+
