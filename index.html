@@ -48,21 +48,21 @@
         const spearImage = new Image();
         spearImage.src = 'spear.png';
 
-        // Game state with increased sprite sizes (3x)
-        let hunter = { x: 50, y: 300, width: 120, height: 180, hasShaft: false, hasSpearhead: false, hasGlue: false };
-        let deer = { x: 500, y: 280, width: 150, height: 150, direction: 1 };
-        let shaft = { x: 100, y: 280, width: 90, height: 180 };
-        let spearhead = { x: 200, y: 280, width: 90, height: 90 };
-        let tree = { x: 350, y: 250, width: 120, height: 240 };
-        let spear = { x: -100, y: -100, width: 150, height: 30, thrown: false, glued: false };
+        // Game state
+        let hunter = { x: 50, y: 300, width: 40, height: 60, hasShaft: false, hasSpearhead: false, hasGlue: false };
+        let deer = { x: 500, y: 280, width: 50, height: 50, direction: 1 };
+        let shaft = { x: 100, y: 280, width: 30, height: 60 };
+        let spearhead = { x: 200, y: 280, width: 30, height: 30 };
+        let tree = { x: 350, y: 250, width: 40, height: 80 };
+        let spear = { x: -100, y: -100, width: 50, height: 10, thrown: false, glued: false };
 
         document.addEventListener("keydown", moveHunter);
         document.addEventListener("keydown", throwSpear);
         canvas.addEventListener("click", applyGlue);
 
         function moveHunter(event) {
-            if (event.key === "ArrowLeft" && hunter.x > 0) hunter.x -= 60;
-            if (event.key === "ArrowRight" && hunter.x < canvas.width - hunter.width) hunter.x += 60;
+            if (event.key === "ArrowLeft" && hunter.x > 0) hunter.x -= 20;
+            if (event.key === "ArrowRight" && hunter.x < canvas.width - hunter.width) hunter.x += 20;
 
             if (!hunter.hasShaft && hunter.x + hunter.width > shaft.x && hunter.x < shaft.x + shaft.width) {
                 hunter.hasShaft = true;
@@ -80,8 +80,8 @@
             }
 
             if (spear.glued && !spear.thrown) {
-                spear.x = hunter.x + 60; 
-                spear.y = hunter.y + 30; 
+                spear.x = hunter.x + 20; 
+                spear.y = hunter.y + 10; 
             }
         }
 
