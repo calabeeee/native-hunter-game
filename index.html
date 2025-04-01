@@ -48,10 +48,12 @@
             if (!hunter.hasShaft && hunter.x + hunter.width > shaft.x && hunter.x < shaft.x + shaft.width) {
                 hunter.hasShaft = true;
                 shaft.x = -100;  // Move the shaft off-screen after picking up
+                updateInstructions("Step 2: Now pick up the spearhead.");
             }
             if (!hunter.hasSpearhead && hunter.x + hunter.width > spearhead.x && hunter.x < spearhead.x + spearhead.width) {
                 hunter.hasSpearhead = true;
                 spearhead.x = -100;  // Move the spearhead off-screen after picking up
+                updateInstructions("Step 3: Click to glue the spearhead to the shaft.");
             }
         }
 
@@ -131,7 +133,7 @@
             shaft.x = 100;
             spearhead.x = 200;
             deer.y = 280;
-            updateInstructions("Use arrow keys to move the hunter.");
+            updateInstructions("Step 1: Use arrow keys to move the hunter.");
         }
 
         update();  // Start the game loop
