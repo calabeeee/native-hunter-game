@@ -55,12 +55,18 @@
         const scale = 2;
 
         // Game state
-        let hunter = { x: 150, y: 300, width: 40 * scale, height: 60 * scale, hasShaft: false, hasSpearhead: false, hasGlue: false };
-        let deer = { x: 400, y: 280, width: 50 * scale, height: 50 * scale, direction: 1, isHit: false };  
-        let shaft = { x: 200, y: 280, width: 30 * scale, height: 60 * scale };
-        let spearhead = { x: 300, y: 280, width: 30 * scale, height: 30 * scale };
-        let tree = { x: 350, y: 250, width: 40 * scale, height: 80 * scale };
-        let spear = { x: -100, y: -100, width: 50 * scale, height: 10 * scale, thrown: false, glued: false };
+        let hunter, deer, shaft, spearhead, tree, spear;
+
+        function initializeGame() {
+            hunter = { x: 150, y: 300, width: 40 * scale, height: 60 * scale, hasShaft: false, hasSpearhead: false, hasGlue: false };
+            deer = { x: 500, y: 280, width: 50 * scale, height: 50 * scale, direction: 1, isHit: false };  
+            shaft = { x: 200, y: 280, width: 30 * scale, height: 60 * scale };
+            spearhead = { x: 300, y: 280, width: 30 * scale, height: 30 * scale };
+            tree = { x: 350, y: 250, width: 40 * scale, height: 80 * scale };
+            spear = { x: -100, y: -100, width: 50 * scale, height: 10 * scale, thrown: false, glued: false };
+        }
+
+        initializeGame();
 
         document.addEventListener("keydown", moveHunter);
         document.addEventListener("keydown", throwSpear);
@@ -108,7 +114,7 @@
         function update() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw background first
+            // Draw background
             ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 
             // Draw hunter
@@ -128,20 +134,14 @@
             // Draw tree
             if (!hunter.hasGlue) {
                 ctx.drawImage(treeImage, tree.x, tree.y, tree.width, tree.height);
-                ctx.fillStyle = "black";
-                ctx.fillText("Tree (Glue)", tree.x - 10, tree.y - 10);
             }
 
             // Draw shaft and spearhead
             if (!hunter.hasShaft) {
                 ctx.drawImage(shaftImage, shaft.x, shaft.y, shaft.width, shaft.height);
-                ctx.fillStyle = "black";
-                ctx.fillText("Shaft", shaft.x + 10, shaft.y - 10);
             }
             if (!hunter.hasSpearhead) {
                 ctx.drawImage(spearheadImage, spearhead.x, spearhead.y, spearhead.width, spearhead.height);
-                ctx.fillStyle = "black";
-                ctx.fillText("Spearhead", spearhead.x + 5, spearhead.y - 10);
             }
 
             // Draw spear
@@ -154,14 +154,14 @@
                 ctx.drawImage(spearImage, spear.x, spear.y, spear.width, spear.height);
                 spear.x += 5;
 
-                if (spear.x > deer.x && spear.x < deer.x + deer.width && spear.y > deer.y && spear.y < deer.y + deer.height) {
+                if (!deer.isHit && spear.x > deer.x && spear.x < deer.x + deer.width && spear.y > deer.y && spear.y < deer.y + deer.height) {
                     deer.isHit = true;
                     updateInstructions("You hit the deer! It turns into steak.");
                     
                     setTimeout(() => {
                         restartGame();
-                    }, 2000); // Delay restart by 2 seconds
-                } else if (spear.x > canvas.width) {
+                    }, 2000); 
+                } else if (!deer.isHit && spear.x > canvas.width) {
                     alert("You missed the deer!");
                     restartGame();
                 }
@@ -171,13 +171,7 @@
         }
 
         function restartGame() {
-            deer.isHit = false;
-            hunter.hasShaft = false;
-            hunter.hasSpearhead = false;
-            hunter.hasGlue = false;
-            spear.thrown = false;
-            spear.glued = false;
-            spear.x = -100;
+            initializeGame();
             updateInstructions("Step 1: Use arrow keys to move the hunter.");
         }
 
