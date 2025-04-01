@@ -13,7 +13,7 @@
 </head>
 <body>
     <h1>Native Hunter Game</h1>
-    <p id="instructions">Step 1: Click to apply glue and attach the spearhead. Step 2: Press Spacebar to throw the spear!</p>
+    <p id="instructions">Step 1: Move to pick up the shaft and spearhead. Step 2: Click to glue them together. Step 3: Press Spacebar to throw!</p>
     <canvas id="gameCanvas" width="600" height="400"></canvas>
     <button onclick="restartGame()">Restart</button>
     
@@ -21,12 +21,12 @@
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
         
-        let phase = "building"; // 'building' or 'hunting'
+        let phase = "pickup"; // 'pickup', 'building', 'hunting'
         
-        let hunter = { x: 50, y: 300, width: 40, height: 60 };
-        let deer = { x: 500, y: 280, width: 50, height: 50 };
-        let spearShaft = { x: 200, y: 350, width: 60, height: 5, attached: false };
-        let spearHead = { x: 280, y: 345, width: 10, height: 10, attached: false };
+        let hunter = { x: 50, y: 300, width: 40, height: 60, hasShaft: false, hasHead: false };
+        let deer = { x: 500, y: 280, width: 50, height: 50, direction: 1 };
+        let spearShaft = { x: 150, y: 350, width: 60, height: 5, pickedUp: false };
+        let spearHead = { x: 250, y: 345, width: 10, height: 10, pickedUp: false };
         let spear = { x: hunter.x + 20, y: hunter.y + 25, width: 70, height: 5, thrown: false, speed: 0 };
         let glueApplied = false;
         let gameOver = false;
@@ -36,20 +36,40 @@
 
         function handleKeyPress(event) {
             if (gameOver) return;
-            if (phase === "hunting") {
-                if (event.key === "ArrowLeft" && hunter.x > 0) hunter.x -= 20;
-                if (event.key === "ArrowRight" && hunter.x < canvas.width - hunter.width) hunter.x += 20;
-                if (event.key === " " && glueApplied && !spear.thrown) throwSpear();
+            
+            if (event.key === "ArrowLeft" && hunter.x > 0) hunter.x -= 20;
+            if (event.key === "ArrowRight" && hunter.x < canvas.width - hunter.width) hunter.x += 20;
+            
+            if (phase === "pickup") {
+                checkPickup();
+            }
+            
+            if (phase === "hunting" && event.key === " " && glueApplied && !spear.thrown) {
+                throwSpear();
+            }
+        }
+
+        function checkPickup() {
+            if (!hunter.hasShaft && Math.abs(hunter.x - spearShaft.x) < 30) {
+                hunter.hasShaft = true;
+                spearShaft.pickedUp = true;
+            }
+            if (!hunter.hasHead && Math.abs(hunter.x - spearHead.x) < 30) {
+                hunter.hasHead = true;
+                spearHead.pickedUp = true;
+            }
+            if (hunter.hasShaft && hunter.hasHead) {
+                phase = "building";
+                document.getElementById("instructions").innerText = "Click to glue the spear together!";
             }
         }
 
         function applyGlue() {
             if (phase !== "building" || glueApplied) return;
             glueApplied = true;
-            spearShaft.attached = true;
-            spearHead.attached = true;
-            document.getElementById("instructions").innerText = "Glue applied! Press Spacebar to throw the spear.";
+            spear = { x: hunter.x + 20, y: hunter.y + 25, width: 70, height: 5, thrown: false, speed: 0 };
             phase = "hunting";
+            document.getElementById("instructions").innerText = "Spear ready! Press Spacebar to throw!";
         }
 
         function throwSpear() {
@@ -64,20 +84,21 @@
             drawElement(hunter, "brown", "Hunter");
             drawElement(deer, "red", "Deer");
             
-            if (phase === "building") {
-                drawElement(spearShaft, "gray", "Spear Shaft");
-                drawElement(spearHead, "black", "Spear Head");
-            }
+            if (!spearShaft.pickedUp) drawElement(spearShaft, "gray", "Spear Shaft");
+            if (!spearHead.pickedUp) drawElement(spearHead, "black", "Spear Head");
             
             if (spear.thrown) {
                 spear.x += spear.speed;
-            } else {
+            } else if (glueApplied) {
                 spear.x = hunter.x + 20;
             }
             
             ctx.fillStyle = glueApplied ? "blue" : "gray";
             ctx.fillRect(spear.x, spear.y, spear.width, spear.height);
             labelElement(spear, "Spear");
+            
+            deer.y += deer.direction * 2;
+            if (deer.y < 250 || deer.y > 320) deer.direction *= -1;
             
             if (
                 spear.x + spear.width >= deer.x && 
@@ -106,14 +127,15 @@
         }
         
         function restartGame() {
-            phase = "building";
-            hunter.x = 50;
-            spearShaft.attached = false;
-            spearHead.attached = false;
+            phase = "pickup";
+            hunter = { x: 50, y: 300, width: 40, height: 60, hasShaft: false, hasHead: false };
+            spearShaft = { x: 150, y: 350, width: 60, height: 5, pickedUp: false };
+            spearHead = { x: 250, y: 345, width: 10, height: 10, pickedUp: false };
             spear = { x: hunter.x + 20, y: hunter.y + 25, width: 70, height: 5, thrown: false, speed: 0 };
+            deer = { x: 500, y: 280, width: 50, height: 50, direction: 1 };
             glueApplied = false;
             gameOver = false;
-            document.getElementById("instructions").innerText = "Step 1: Click to apply glue and attach the spearhead. Step 2: Press Spacebar to throw the spear!";
+            document.getElementById("instructions").innerText = "Step 1: Move to pick up the shaft and spearhead. Step 2: Click to glue them together. Step 3: Press Spacebar to throw!";
             update();
         }
         
