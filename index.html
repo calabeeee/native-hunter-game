@@ -14,7 +14,7 @@
 <body>
     <h1>Native Hunter Game</h1>
     <p id="instructions">
-        Instructions: Move the hunter with the left and right arrow keys. Click to glue the spearhead to the shaft. Press spacebar to throw the spear at the deer.
+        Instructions: Move the hunter with the left and right arrow keys. Walk over the shaft and spearhead to pick them up. Click to glue the spearhead to the shaft. Press spacebar to throw the spear at the deer.
     </p>
     <canvas id="gameCanvas" width="600" height="400"></canvas>
     <button onclick="restartGame()">Restart</button>
@@ -31,11 +31,11 @@
         deerImage.src = 'deer.png';  // Update the path if needed
 
         // Define game objects
-        let hunter = { x: 50, y: 300, width: 40, height: 60 };
+        let hunter = { x: 50, y: 300, width: 40, height: 60, hasShaft: false, hasSpearhead: false };
         let deer = { x: 500, y: 280, width: 50, height: 50, direction: 1 };
 
         let shaft = { x: 100, y: 280, width: 10, height: 60 };
-        let spearhead = { x: 100, y: 240, width: 20, height: 20 };
+        let spearhead = { x: 200, y: 240, width: 20, height: 20 };
 
         let spear = { x: hunter.x + 20, y: hunter.y + 10, width: 30, height: 5, thrown: false };
         
@@ -50,11 +50,21 @@
         function moveHunter(event) {
             if (event.key === "ArrowLeft" && hunter.x > 0) hunter.x -= 20;
             if (event.key === "ArrowRight" && hunter.x < canvas.width - hunter.width) hunter.x += 20;
+
+            // Check if hunter picks up the shaft or spearhead
+            if (!hunter.hasShaft && hunter.x + hunter.width > shaft.x && hunter.x < shaft.x + shaft.width) {
+                hunter.hasShaft = true;
+                shaft.x = -100;  // Move shaft off-screen once picked up
+            }
+            if (!hunter.hasSpearhead && hunter.x + hunter.width > spearhead.x && hunter.x < spearhead.x + spearhead.width) {
+                hunter.hasSpearhead = true;
+                spearhead.x = -100;  // Move spearhead off-screen once picked up
+            }
         }
 
         // Apply glue by clicking on the canvas
         function applyGlue(event) {
-            if (!glueApplied) {
+            if (hunter.hasShaft && hunter.hasSpearhead && !glueApplied) {
                 glueApplied = true;
                 spear.x = hunter.x + 20;  // Position spear next to hunter
                 spear.y = hunter.y + 10;
@@ -84,13 +94,15 @@
             }
             ctx.fillText("Deer", deer.x + 10, deer.y + 10);
 
-            // Draw the shaft and spearhead if not glued yet
-            if (!glueApplied) {
+            // Draw the shaft and spearhead if not picked up yet
+            if (!hunter.hasShaft) {
                 ctx.fillStyle = "brown";
                 ctx.fillRect(shaft.x, shaft.y, shaft.width, shaft.height);
+                ctx.fillText("Shaft", shaft.x + 10, shaft.y + 10);
+            }
+            if (!hunter.hasSpearhead) {
                 ctx.fillStyle = "gray";
                 ctx.fillRect(spearhead.x, spearhead.y, spearhead.width, spearhead.height);
-                ctx.fillText("Shaft", shaft.x + 10, shaft.y + 10);
                 ctx.fillText("Spearhead", spearhead.x + 10, spearhead.y + 10);
             }
 
@@ -109,6 +121,10 @@
                 spear.x = hunter.x + 20;
                 spear.y = hunter.y + 10;
                 glueApplied = false;  // Reset the glue state
+                hunter.hasShaft = false;  // Reset item pickup states
+                hunter.hasSpearhead = false;
+                shaft.x = 100;  // Reset shaft position
+                spearhead.x = 200;  // Reset spearhead position
             }
 
             requestAnimationFrame(update);  // Keep updating the game
@@ -123,6 +139,10 @@
             spear.x = hunter.x + 20;
             spear.y = hunter.y + 10;
             deer.y = 280;  // Reset deer position
+            hunter.hasShaft = false;
+            hunter.hasSpearhead = false;
+            shaft.x = 100;
+            spearhead.x = 200;
         }
 
         // Start game loop
