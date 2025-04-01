@@ -103,20 +103,26 @@
                 deer.direction *= -1;  // Deer bounces up and down
             }
 
-            // Draw shaft and spearhead
+            // Draw shaft and spearhead with labels
             if (!hunter.hasShaft) {
                 ctx.fillStyle = "brown";
                 ctx.fillRect(shaft.x, shaft.y, shaft.width, shaft.height);
+                ctx.fillStyle = "black";
+                ctx.fillText("Shaft", shaft.x + 10, shaft.y - 10);
             }
             if (!hunter.hasSpearhead) {
                 ctx.fillStyle = "gray";
                 ctx.fillRect(spearhead.x, spearhead.y, spearhead.width, spearhead.height);
+                ctx.fillStyle = "black";
+                ctx.fillText("Spearhead", spearhead.x + 5, spearhead.y - 10);
             }
 
             // Draw the spear (if glued)
             if (spear.glued) {
                 ctx.fillStyle = "gray";
                 ctx.fillRect(spear.x, spear.y, spear.width, spear.height);
+                ctx.fillStyle = "black";
+                ctx.fillText("Spear", spear.x + 5, spear.y - 10);
             }
 
             requestAnimationFrame(update);
