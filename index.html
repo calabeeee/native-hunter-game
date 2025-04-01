@@ -33,7 +33,7 @@
         let deer = { x: 500, y: 280, width: 50, height: 50, direction: 1 };
         let shaft = { x: 100, y: 280, width: 10, height: 60 };
         let spearhead = { x: 200, y: 240, width: 20, height: 20 };
-        let spear = { x: hunter.x + 20, y: hunter.y + 10, width: 30, height: 5, thrown: false, glued: false };
+        let spear = { x: -100, y: -100, width: 30, height: 5, thrown: false, glued: false };
 
         // Handle key events
         document.addEventListener("keydown", moveHunter);
@@ -59,6 +59,8 @@
 
         function applyGlue(event) {
             if (hunter.hasShaft && hunter.hasSpearhead && !spear.glued) {
+                spear.x = hunter.x + 20; // Position spear in front of hunter
+                spear.y = hunter.y + 10; // Position spear just below the hunter's hand
                 spear.glued = true;
                 updateInstructions("Step 4: Press spacebar to throw the spear at the deer.");
             }
@@ -69,25 +71,6 @@
                 spear.thrown = true;
                 updateInstructions("Step 5: You threw the spear! Keep throwing it until it hits the deer.");
             }
-            if (spear.thrown) {
-                spear.x += 10;  // Move spear right
-                if (spear.x > deer.x && spear.x < deer.x + deer.width && spear.y > deer.y && spear.y < deer.y + deer.height) {
-                    alert("You hit the deer!");
-                    spear.thrown = false;
-                    spear.x = hunter.x + 20;
-                    spear.y = hunter.y + 10;
-                    spear.glued = false;
-                    hunter.hasShaft = false;
-                    hunter.hasSpearhead = false;
-                    shaft.x = 100;  // Reset shaft position
-                    spearhead.x = 200;  // Reset spearhead position
-                    updateInstructions("You hit the deer! Restart the game to try again.");
-                }
-            }
-        }
-
-        function updateInstructions(text) {
-            document.getElementById("instructions").innerText = text;
         }
 
         function update() {
@@ -117,12 +100,26 @@
                 ctx.fillText("Spearhead", spearhead.x + 5, spearhead.y - 10);
             }
 
-            // Draw the spear (if glued)
-            if (spear.glued) {
+            // Draw the spear (if glued and thrown)
+            if (spear.glued && spear.thrown) {
+                spear.x += 10;  // Move spear right when thrown
                 ctx.fillStyle = "gray";
                 ctx.fillRect(spear.x, spear.y, spear.width, spear.height);
                 ctx.fillStyle = "black";
                 ctx.fillText("Spear", spear.x + 5, spear.y - 10);
+                // Check if spear hits the deer
+                if (spear.x > deer.x && spear.x < deer.x + deer.width && spear.y > deer.y && spear.y < deer.y + deer.height) {
+                    alert("You hit the deer!");
+                    spear.thrown = false;
+                    spear.x = hunter.x + 20;
+                    spear.y = hunter.y + 10;
+                    spear.glued = false;
+                    hunter.hasShaft = false;
+                    hunter.hasSpearhead = false;
+                    shaft.x = 100;  // Reset shaft position
+                    spearhead.x = 200;  // Reset spearhead position
+                    updateInstructions("You hit the deer! Restart the game to try again.");
+                }
             }
 
             requestAnimationFrame(update);
@@ -132,8 +129,8 @@
             hunter.x = 50;
             hunter.y = 300;
             spear.thrown = false;
-            spear.x = hunter.x + 20;
-            spear.y = hunter.y + 10;
+            spear.x = -100;
+            spear.y = -100;
             spear.glued = false;
             hunter.hasShaft = false;
             hunter.hasSpearhead = false;
@@ -141,6 +138,10 @@
             spearhead.x = 200;
             deer.y = 280;
             updateInstructions("Step 1: Use arrow keys to move the hunter.");
+        }
+
+        function updateInstructions(text) {
+            document.getElementById("instructions").innerText = text;
         }
 
         update();  // Start the game loop
