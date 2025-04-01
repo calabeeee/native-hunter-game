@@ -36,6 +36,9 @@
         const deerImage = new Image();
         deerImage.src = 'deer.png';  
 
+        const steakImage = new Image();
+        steakImage.src = 'steak.png';  // Add steak image
+
         const treeImage = new Image();
         treeImage.src = 'tree.png';  
 
@@ -53,7 +56,7 @@
 
         // Game state with scaled sizes
         let hunter = { x: 50 + (canvas.width - 600) / 2, y: 300, width: 40 * scale, height: 60 * scale, hasShaft: false, hasSpearhead: false, hasGlue: false };
-        let deer = { x: 500 + (canvas.width - 600) / 2, y: 280, width: 50 * scale, height: 50 * scale, direction: 1 };
+        let deer = { x: 500 + (canvas.width - 600) / 2, y: 280, width: 50 * scale, height: 50 * scale, direction: 1, isHit: false };  // Add isHit flag
         let shaft = { x: 100 + (canvas.width - 600) / 2, y: 280, width: 30 * scale, height: 60 * scale };
         let spearhead = { x: 200 + (canvas.width - 600) / 2, y: 280, width: 30 * scale, height: 30 * scale };
         let tree = { x: 350 + (canvas.width - 600) / 2, y: 250, width: 40 * scale, height: 80 * scale };
@@ -111,11 +114,16 @@
             // Draw hunter
             ctx.drawImage(hunterImage, hunter.x, hunter.y, hunter.width, hunter.height);
 
-            // Draw deer (moving up and down)
-            ctx.drawImage(deerImage, deer.x, deer.y, deer.width, deer.height);
-            deer.y += deer.direction;
-            if (deer.y > canvas.height - deer.height || deer.y < 0) {
-                deer.direction *= -1;
+            // If the deer is hit, draw the steak instead
+            if (deer.isHit) {
+                ctx.drawImage(steakImage, deer.x, deer.y, deer.width, deer.height);
+            } else {
+                // Draw deer (moving up and down)
+                ctx.drawImage(deerImage, deer.x, deer.y, deer.width, deer.height);
+                deer.y += deer.direction;
+                if (deer.y > canvas.height - deer.height || deer.y < 0) {
+                    deer.direction *= -1;
+                }
             }
 
             // Draw tree with glue
@@ -148,7 +156,9 @@
 
                 spear.x += 5;
 
+                // Check if the spear hits the deer
                 if (spear.x > deer.x && spear.x < deer.x + deer.width && spear.y > deer.y && spear.y < deer.y + deer.height) {
+                    deer.isHit = true;  // Deer is hit, so change image to steak
                     alert("You hit the deer!");
                     restartGame();
                 } else if (spear.x > canvas.width) {
@@ -167,6 +177,7 @@
             spear.x = -100;
             spear.y = -100;
             spear.glued = false;
+            deer.isHit = false;  // Reset the deer image to deer
             hunter.hasShaft = false;
             hunter.hasSpearhead = false;
             hunter.hasGlue = false;
