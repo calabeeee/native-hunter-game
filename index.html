@@ -48,19 +48,16 @@
         const backgroundImage = new Image();
         backgroundImage.src = 'background.png'; // Replace with your actual image path
 
-        // Scale factor
-        const scale = 3;
+        // Game state with original positions but scaled size (3x)
+        let hunter = { x: 50, y: 300, width: 40 * 3, height: 60 * 3, hasShaft: false, hasSpearhead: false, hasGlue: false, spear: { x: -100, y: -100 } };
+        let deer = { x: 500, y: 280, width: 50 * 3, height: 50 * 3, direction: 1 };
+        let shaft = { x: 100, y: 280, width: 10 * 3, height: 60 * 3 };
+        let spearhead = { x: 200, y: 280, width: 20 * 3, height: 20 * 3 };
+        let tree = { x: 350, y: 250, width: 40 * 3, height: 80 * 3 };
+        let spear = { x: -100, y: -100, width: 30 * 3, height: 5 * 3, thrown: false, glued: false };
 
-        // Game state (scaled by 3x)
-        let hunter = { x: 50, y: 300, width: 40 * scale, height: 60 * scale, hasShaft: false, hasSpearhead: false, hasGlue: false, spear: { x: -100, y: -100 } };
-        let deer = { x: 500, y: 280, width: 50 * scale, height: 50 * scale, direction: 1 };
-        let shaft = { x: 100, y: 280, width: 10 * scale, height: 60 * scale };
-        let spearhead = { x: 200, y: 280, width: 20 * scale, height: 20 * scale };
-        let tree = { x: 350, y: 250, width: 40 * scale, height: 80 * scale };
-        let spear = { x: -100, y: -100, width: 30 * scale, height: 5 * scale, thrown: false, glued: false };
-
-        // Movement step (scaled)
-        const moveStep = 20 * scale;
+        // Movement step (scale is applied in size, so no need to scale move step)
+        const moveStep = 20;
 
         // Handle key events
         document.addEventListener("keydown", moveHunter);
@@ -89,15 +86,15 @@
 
             // If spear is glued, make it follow the hunter
             if (spear.glued && !spear.thrown) {
-                spear.x = hunter.x + 20 * scale; // Position spear in front of hunter
-                spear.y = hunter.y + 10 * scale; // Position spear just below the hunter's hand
+                spear.x = hunter.x + 20; // Position spear in front of hunter
+                spear.y = hunter.y + 10; // Position spear just below the hunter's hand
             }
         }
 
         function applyGlue(event) {
             if (hunter.hasShaft && hunter.hasSpearhead && hunter.hasGlue && !spear.glued) {
-                spear.x = hunter.x + 20 * scale; // Position spear in front of hunter
-                spear.y = hunter.y + 10 * scale; // Position spear just below the hunter's hand
+                spear.x = hunter.x + 20; // Position spear in front of hunter
+                spear.y = hunter.y + 10; // Position spear just below the hunter's hand
                 spear.glued = true;
                 updateInstructions("Step 5: Press spacebar to throw the spear at the deer.");
             }
