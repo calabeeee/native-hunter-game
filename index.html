@@ -37,7 +37,7 @@
         let shaft = { x: 100, y: 280, width: 10, height: 60 };
         let spearhead = { x: 200, y: 240, width: 20, height: 20 };
 
-        let spear = { x: hunter.x + 20, y: hunter.y + 10, width: 30, height: 5, thrown: false };
+        let spear = { x: hunter.x + 20, y: hunter.y + 10, width: 30, height: 5, thrown: false, glued: false };
         
         let glueApplied = false;
 
@@ -60,12 +60,19 @@
                 hunter.hasSpearhead = true;
                 spearhead.x = -100;  // Move spearhead off-screen once picked up
             }
+
+            // Move spear with the hunter if it's glued
+            if (spear.glued) {
+                spear.x = hunter.x + 20;  // Spear follows the hunter's position
+                spear.y = hunter.y + 10;
+            }
         }
 
         // Apply glue by clicking on the canvas
         function applyGlue(event) {
-            if (hunter.hasShaft && hunter.hasSpearhead && !glueApplied) {
+            if (hunter.hasShaft && hunter.hasSpearhead && !glueApplied && !spear.glued) {
                 glueApplied = true;
+                spear.glued = true;  // Spear is now glued
                 spear.x = hunter.x + 20;  // Position spear next to hunter
                 spear.y = hunter.y + 10;
             }
@@ -73,8 +80,9 @@
 
         // Throw the spear when Spacebar is pressed
         function throwSpear(event) {
-            if (event.key === " " && glueApplied && !spear.thrown) {
+            if (event.key === " " && glueApplied && spear.glued && !spear.thrown) {
                 spear.thrown = true;  // Spear is now thrown
+                glueApplied = false;  // Reset glue state after throwing
             }
         }
 
@@ -120,7 +128,8 @@
                 spear.thrown = false;
                 spear.x = hunter.x + 20;
                 spear.y = hunter.y + 10;
-                glueApplied = false;  // Reset the glue state
+                spear.glued = false;  // Reset spear state
+                glueApplied = false;  // Reset glue state
                 hunter.hasShaft = false;  // Reset item pickup states
                 hunter.hasSpearhead = false;
                 shaft.x = 100;  // Reset shaft position
@@ -139,6 +148,7 @@
             spear.x = hunter.x + 20;
             spear.y = hunter.y + 10;
             deer.y = 280;  // Reset deer position
+            spear.glued = false;
             hunter.hasShaft = false;
             hunter.hasSpearhead = false;
             shaft.x = 100;
