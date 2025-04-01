@@ -67,7 +67,22 @@
         function throwSpear(event) {
             if (event.key === " " && spear.glued && !spear.thrown) {
                 spear.thrown = true;
-                updateInstructions("Step 5: You threw the spear! Wait for the result.");
+                updateInstructions("Step 5: You threw the spear! Keep throwing it until it hits the deer.");
+            }
+            if (spear.thrown) {
+                spear.x += 10;  // Move spear right
+                if (spear.x > deer.x && spear.x < deer.x + deer.width && spear.y > deer.y && spear.y < deer.y + deer.height) {
+                    alert("You hit the deer!");
+                    spear.thrown = false;
+                    spear.x = hunter.x + 20;
+                    spear.y = hunter.y + 10;
+                    spear.glued = false;
+                    hunter.hasShaft = false;
+                    hunter.hasSpearhead = false;
+                    shaft.x = 100;  // Reset shaft position
+                    spearhead.x = 200;  // Reset spearhead position
+                    updateInstructions("You hit the deer! Restart the game to try again.");
+                }
             }
         }
 
@@ -98,25 +113,11 @@
                 ctx.fillRect(spearhead.x, spearhead.y, spearhead.width, spearhead.height);
             }
 
-            // Draw the spear
-            if (spear.thrown) {
-                spear.x += 10;  // Move spear right
+            // Draw the spear (if glued)
+            if (spear.glued) {
+                ctx.fillStyle = "gray";
+                ctx.fillRect(spear.x, spear.y, spear.width, spear.height);
             }
-            if (spear.x > deer.x && spear.x < deer.x + deer.width && spear.y > deer.y && spear.y < deer.y + deer.height) {
-                alert("You hit the deer!");
-                spear.thrown = false;
-                spear.x = hunter.x + 20;
-                spear.y = hunter.y + 10;
-                spear.glued = false;
-                hunter.hasShaft = false;
-                hunter.hasSpearhead = false;
-                shaft.x = 100;  // Reset shaft position
-                spearhead.x = 200;  // Reset spearhead position
-                updateInstructions("You hit the deer! Restart the game to try again.");
-            }
-
-            ctx.fillStyle = "gray";
-            ctx.fillRect(spear.x, spear.y, spear.width, spear.height);
 
             requestAnimationFrame(update);
         }
